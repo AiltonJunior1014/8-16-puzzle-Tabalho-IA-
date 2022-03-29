@@ -8,12 +8,14 @@ mat.monta()
 mat2.monta()
 mat2.mostra()
 #mat.sobe()
-for x in range (4):
+#for x in range (4):
+mat.embaralha()
+while mat.isEqual(mat2.getMatriz()).all():
     mat.embaralha()
 mat.mostra()
 
 #mat.qtdpecas(mat2.getMatriz())
-
+print("inicia bestfirst")
 mat.bestfirst(mat2)
 
 

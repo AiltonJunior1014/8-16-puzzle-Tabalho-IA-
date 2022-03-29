@@ -17,6 +17,7 @@ class Matriz():
 
     def getg(self):
         return self.g
+
     def monta(self, num):
         cont = 0
         for x in range (self.lin, 2):
@@ -69,12 +70,12 @@ class Matriz():
         Aux = self.mat[self.posy][self.posx]
         self.mat[self.posy][self.posx] = self.mat[self.posy][self.posx-1]
         self.mat[self.posy][self.posx - 1] = Aux
-        self.posx = self.posx -1
+        self.posx = self.posx - 1
 
     def mostra(self):
         print(self.mat)
-        print("" + str(self.lin) + "" + str(self.col))
-        print(""+str(self.posx)+""+str(self.posy))
+        #print("" + str(self.lin) + "" + str(self.col))
+        #print(""+str(self.posx)+""+str(self.posy))
 
     def podeSubir(self):
         return not(self.posy == 0)
@@ -95,33 +96,45 @@ class Matriz():
             if num == 0:
                 if self.podeSubir():
                     self.sobe()
+                    print(0)
             elif num == 1:
                 if self.podeEsquerda():
                     self.esquerda()
+                    print(1)
             elif num == 2:
                 if self.podeDescer():
                     self.desce()
+                    print(2)
             elif num == 3:
                 if self.podeDireita():
                     self.direita()
+                    print(3)
+            print(self.mat)
 
     def qtdpecas(self, matriz):# distancia para final
-        if not self.isEqual(matriz).all():
-            count = 0
-            for x in range (self.lin):
-                for y in range (self.col):
-                    if self.mat[x][y] != matriz[x][y]:
-                        count += 1
-            return count
+        count = 0
+        for x in range (self.lin):
+            for y in range (self.col):
+                if self.mat[x][y] != matriz[x][y]:
+                    count += 1
+        return count
+
+    def existe(self, pas):
+        for i in range(len(pas)):
+            if self.isEqual(pas[i]).all():
+                return False
+        return True
 
     def bestfirst(self, final):
         res = self
         caminho = []
+        passou = []
 
-
-        while not(self.isEqual(final.getMatriz()).all()):
+        passou.append(deepcopy(self.getMatriz()))
+        while not(res.isEqual(final.getMatriz()).all()):
             aux = []
             mov = []
+
 
             for i in range(4):
                 aux.append(deepcopy(res))
@@ -142,13 +155,16 @@ class Matriz():
             menorcusto = 99999
             posmenor = 0
             for i in range(4):
+
                 cust = aux[i].custo(final.getMatriz())
-                if menorcusto > cust and i in mov:
+                if menorcusto > cust and i in mov and aux[i].existe(passou):
                     menorcusto = cust
                     posmenor = i
 
             res = aux[posmenor]
             caminho.append(posmenor)
+            passou.append(deepcopy(aux[posmenor].getMatriz()))
             res.g += 1
-            print(res.getg())
-        print(res)
+            print(res.getMatriz())
+            print(res.custo(final.getMatriz()))
+        print(res.getMatriz())
