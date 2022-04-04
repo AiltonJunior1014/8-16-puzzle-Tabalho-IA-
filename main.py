@@ -2,8 +2,8 @@ from matriz import Matriz
 from solucao import Solucao
 
 
-mat = Matriz(4, 4)
-mat2 = Matriz(4, 4)
+mat = Matriz(3, 3)
+mat2 = Matriz(3, 3)
 
 mat.monta()
 mat2.monta()
@@ -21,5 +21,6 @@ print("inicia bestfirst")
 
 sol = Solucao(3,3)
 
-sol.bestfirst(mat,mat2)
+#sol.bestfirst(mat,mat2)
+sol.a_estrla(mat,mat2)
 

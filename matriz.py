@@ -10,9 +10,17 @@ class Matriz():
         self.posx = 0
         self.posy = 0
         self.dist = 0
+        self.caminho = []
 
-    def custo(self, matriz):
-        return self.qtdpecas(matriz)
+
+    def inserecaminho(self, cam):
+        self.caminho.append(cam)
+
+    def custo(self):
+        return self.dist + self.g
+
+    def incg(self):
+        self.g += 1
 
     def getg(self):
         return self.g
@@ -126,6 +134,20 @@ class Matriz():
                 return False
         return True
 
+    def andar(self, caminho):
+        for i in caminho:
+            if i == 0:
+                self.sobe()
+                print("sobe")
+            if i == 1:
+                self.direita()
+                print("direita")
+            if i == 2:
+                self.esquerda()
+                print("esquerda")
+            if i == 3:
+                self.desce()
+                print("desce")
 
     def __eq__(self, other):
         return self.dist == other.dist
