@@ -1,6 +1,4 @@
 import random
-from copy import deepcopy
-
 import numpy as np
 class Matriz():
 
@@ -11,9 +9,10 @@ class Matriz():
         self.mat = np.zeros((linhas,colunas), dtype=int)
         self.posx = 0
         self.posy = 0
+        self.dist = 0
 
     def custo(self, matriz):
-        return self.g + self.qtdpecas(matriz)
+        return self.qtdpecas(matriz)
 
     def getg(self):
         return self.g
@@ -31,6 +30,9 @@ class Matriz():
     def getcol(self):
         return self.col
 
+    def get(self):
+        return self
+
     def monta(self):
         aux = 0
         for x in range (self.lin):
@@ -42,8 +44,12 @@ class Matriz():
     def getMatriz(self):
         return self.mat
 
-    def isEqual(self,matriz):
-        return self.mat == matriz
+    def isEqual(self, matriz):
+        for x in range(self.lin):
+            for y in range(self.col):
+                if self.mat[x][y] != matriz[x][y]:
+                    return False
+        return True
 
 
 
@@ -96,20 +102,15 @@ class Matriz():
             if num == 0:
                 if self.podeSubir():
                     self.sobe()
-                    print(0)
             elif num == 1:
                 if self.podeEsquerda():
                     self.esquerda()
-                    print(1)
             elif num == 2:
                 if self.podeDescer():
                     self.desce()
-                    print(2)
             elif num == 3:
                 if self.podeDireita():
                     self.direita()
-                    print(3)
-            print(self.mat)
 
     def qtdpecas(self, matriz):# distancia para final
         count = 0
@@ -117,54 +118,17 @@ class Matriz():
             for y in range (self.col):
                 if self.mat[x][y] != matriz[x][y]:
                     count += 1
-        return count
+        self.dist = count
 
     def existe(self, pas):
         for i in range(len(pas)):
-            if self.isEqual(pas[i]).all():
+            if self.isEqual(pas[i].getMatriz()):
                 return False
         return True
 
-    def bestfirst(self, final):
-        res = self
-        caminho = []
-        passou = []
 
-        passou.append(deepcopy(self.getMatriz()))
-        while not(res.isEqual(final.getMatriz()).all()):
-            aux = []
-            mov = []
+    def __eq__(self, other):
+        return self.dist == other.dist
 
-
-            for i in range(4):
-                aux.append(deepcopy(res))
-
-            if res.podeSubir():
-                aux[0].sobe()
-                mov.append(0)
-            if res.podeDireita():
-                aux[1].direita()
-                mov.append(1)
-            if res.podeEsquerda():
-                aux[2].esquerda()
-                mov.append(2)
-            if res.podeDescer():
-                aux[3].desce()
-                mov.append(3)
-
-            menorcusto = 99999
-            posmenor = 0
-            for i in range(4):
-
-                cust = aux[i].custo(final.getMatriz())
-                if menorcusto > cust and i in mov and aux[i].existe(passou):
-                    menorcusto = cust
-                    posmenor = i
-
-            res = aux[posmenor]
-            caminho.append(posmenor)
-            passou.append(deepcopy(aux[posmenor].getMatriz()))
-            res.g += 1
-            print(res.getMatriz())
-            print(res.custo(final.getMatriz()))
-        print(res.getMatriz())
+    def __lt__(self, aux):
+        return self.dist < aux.dist
