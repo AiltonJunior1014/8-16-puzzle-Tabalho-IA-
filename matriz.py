@@ -137,20 +137,8 @@ class Matriz():
                 return False
         return True
 
-    def andar(self, caminho):
-        for i in caminho:
-            if i == 0:
-                self.sobe()
-                print("sobe")
-            if i == 1:
-                self.direita()
-                print("direita")
-            if i == 2:
-                self.esquerda()
-                print("esquerda")
-            if i == 3:
-                self.desce()
-                print("desce")
+    def __str__(self,x,y):
+        return ""+self.mat[x][y]
 
     def __eq__(self, other):
         return self.dist == other.dist
