@@ -112,3 +112,4 @@ class Solucao():
         print("terminouu")
         print(res.custo())
         print(res.caminho)
+        print(len(res.caminho))

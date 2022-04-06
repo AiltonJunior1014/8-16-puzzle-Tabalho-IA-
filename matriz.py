@@ -111,14 +111,17 @@ class Matriz():
                 if self.podeSubir():
                     self.sobe()
             elif num == 1:
-                if self.podeEsquerda():
-                    self.esquerda()
-            elif num == 2:
-                if self.podeDescer():
-                    self.desce()
-            elif num == 3:
                 if self.podeDireita():
                     self.direita()
+            elif num == 2:
+                if self.podeEsquerda():
+                    self.esquerda()
+            elif num == 3:
+                if self.podeDescer():
+                    self.desce()
+
+            #print(num)
+            #print(self.mat)
 
     def qtdpecas(self, matriz):# distancia para final
         count = 0
