@@ -3,10 +3,10 @@ import time
 from threading import Thread
 from matriz import Matriz
 from copy import deepcopy
-from queue import PriorityQueue, Queue
+from queue import PriorityQueue
 from tkinter import *
 import tkinter
-###Calucar tredi
+
 
 class Solucao():
     def __init__(self, menu):
@@ -21,11 +21,12 @@ class Solucao():
         self.button2 = tkinter.Button(menu, text="Algoritmo Best First", command=lambda:self.clique2())
         self.button3 = tkinter.Button(menu, text="Trocar 8-16", command=lambda:self.troca())
         self.button4 = tkinter.Button(menu, text="Embaralhar", command=lambda:self.embaralha())
-        self.button.grid(row=4, column=0)
-        self.button2.grid(row=4, column=1)
-        self.button3.grid(row=5, column=0)
-        self.button4.grid(row=5, column=1)
+        self.button.place(relx=0.6, rely=0.3, anchor=CENTER)
+        self.button2.place(relx=0.36, rely=0.3, anchor=CENTER)
+        self.button3.place(relx=0.6, rely=0.4, anchor=CENTER)
+        self.button4.place(relx=0.4, rely=0.4, anchor=CENTER)
 
+        self.labelresp = Label()
         self.label = Label()
         self.label1 = Label()
         self.label2 = Label()
@@ -43,24 +44,33 @@ class Solucao():
         self.label14 = Label()
         self.label15 = Label()
 
+        Thread(target = self.settamanho, daemon=True).start()
 
 
-
+    def resposta (self, tempo, res, no):
+        resp = "Melhor caminho: \n" \
+               ""+str(res.caminho)+"\n\n" \
+               "Tempo de Solução:"+str(tempo)+"\n" \
+               "Passou por:" + str(float(no)) + " Nós\n"
+        self.labelresp = Label(self.menu, text=resp, font=("Arial", 8))
+        self.labelresp.place(relx=0.5, rely=0.6, anchor=CENTER)
+        self.andar(res.caminho)
 
 
 
     def bestfirst(self, ini, final):
-        caminho = []
-        passoulist = []
         passou = PriorityQueue()
-        passou.maxsize = 999999
+        tempo = time.time()
+        passou.maxsize = 999
         passou.put(ini)
+        no = 0
         res = passou.get()
         res.qtdpecas(final.getMatriz())
         while not res.isEqual(final.getMatriz()):
-            passoulist.append(deepcopy(res))
+            res.appendpassou(deepcopy(res.getMatriz()))
             aux = []
             mov = []
+
             for i in range(4):
                 aux.append(deepcopy(res))
 
@@ -86,34 +96,29 @@ class Solucao():
                 aux[3].inserecaminho(3)
 
             for j in range(len(aux)):
-                if j in mov and aux[j].existe(passoulist):
+                if j in mov and not(aux[j].existe(deepcopy(res.passoulist))):
                     passou.put(aux[j])
 
-
+            print("i")
+            no=+1
+            print(res.mat)
             res = passou.get()
-            print(res.getMatriz())
 
-
-        print(res.caminho)
-        self.andar(res.caminho)
-
+        fim = time.time()
+        self.resposta(fim - tempo,res,no)
 
     def a_estrla(self, ini, final):
-        caminho = []
-        passoulist = []
         passou = PriorityQueue()
-        passou.maxsize = 999999
+        passou.maxsize = 999
         tempo = time.time()
-        no =0
+        no = 0
         passou.put(ini)
         res = passou.get()
-        res.custo()
-        while not res.isEqual(final.getMatriz()):
-
-            passoulist.append(deepcopy(res))
-
+        while not res.isEqual(final.getMatriz()) and passou.not_empty:
+            res.custo()
             aux = []
             mov = []
+            res.appendpassou(deepcopy(res.getMatriz()))
 
             for i in range(4):
                 aux.append(deepcopy(res))
@@ -123,8 +128,8 @@ class Solucao():
                 mov.append(0)
                 aux[0].qtdpecas(final.getMatriz())
                 aux[0].inserecaminho(0)
-                aux[0].incg()
 
+                aux[0].incg()
             if res.podeDireita():
                 aux[1].direita()
                 mov.append(1)
@@ -145,32 +150,37 @@ class Solucao():
                 aux[3].incg()
 
             for j in range(len(aux)):
-                if j in mov and aux[j].existe(passoulist):
+                if j in mov and not(aux[j].existe(deepcopy(res.passoulist))):
                     passou.put(aux[j])
-            res = passou.get()
-            no+=1
-        fim = time.time()
-        print(res.custo())
-        print("Melhor caminho: ")
-        print(str(res.caminho))
-        print("Tempo de Solução{:.2}\n".format(fim-tempo))
 
-        print("Passou por:"+str(float(no))+" Nóis\n")
-        print(len(res.caminho))
-        self.andar(res.caminho)
+            print("i")
+            res = passou.get()
+            no += 1
+            print(res.mat)
+
+        fim = time.time()
+        Thread(target= self.resposta(fim - tempo, res, no)).start()
 
     def settamanho(self):
         sys.stdout.flush()
-        if (self.tam == 3):
-            self.label = Label(self.menu, text=self.mat.mat[0][0], font="Arial")
-            self.label1 = Label(self.menu, text=self.mat.mat[0][1], font="Arial")
-            self.label2 = Label(self.menu, text=self.mat.mat[0][2], font="Arial")
-            self.label3 = Label(self.menu, text=self.mat.mat[1][0], font="Arial")
-            self.label4 = Label(self.menu, text=self.mat.mat[1][1], font="Arial")
-            self.label5 = Label(self.menu, text=self.mat.mat[1][2], font="Arial")
-            self.label6 = Label(self.menu, text=self.mat.mat[2][0], font="Arial")
-            self.label7 = Label(self.menu, text=self.mat.mat[2][1], font="Arial")
-            self.label8 = Label(self.menu, text=self.mat.mat[2][2], font="Arial")
+
+        if self.tam == 3:
+            self.label = Label(self.menu, text=self.mat.mat[0][0], font="Arial", width=10)
+            self.label1 = Label(self.menu, text=self.mat.mat[0][1], font="Arial", width=10)
+            self.label2 = Label(self.menu, text=self.mat.mat[0][2], font="Arial", width=10)
+            self.label3 = Label(self.menu, text=self.mat.mat[1][0], font="Arial", width=10)
+            self.label4 = Label(self.menu, text=self.mat.mat[1][1], font="Arial", width=10)
+            self.label5 = Label(self.menu, text=self.mat.mat[1][2], font="Arial", width=10)
+            self.label6 = Label(self.menu, text=self.mat.mat[2][0], font="Arial", width=10)
+            self.label7 = Label(self.menu, text=self.mat.mat[2][1], font="Arial", width=10)
+            self.label8 = Label(self.menu, text=self.mat.mat[2][2], font="Arial", width=10)
+            self.label9 = Label(self.menu, text="", font="Arial")
+            self.label10 = Label(self.menu, text="", font="Arial")
+            self.label11 = Label(self.menu, text="", font="Arial")
+            self.label12 = Label(self.menu, text="", font="Arial")
+            self.label13 = Label(self.menu, text="", font="Arial")
+            self.label14 = Label(self.menu, text="", font="Arial")
+            self.label15 = Label(self.menu, text="", font="Arial")
 
             self.label.grid(row=0, column=0, sticky="nsew")
             self.label1.grid(row=0, column=1, sticky="nsew")
@@ -181,38 +191,32 @@ class Solucao():
             self.label6.grid(row=2, column=0, sticky="nsew")
             self.label7.grid(row=2, column=1, sticky="nsew")
             self.label8.grid(row=2, column=2, sticky="nsew")
+            self.label9.grid(row=0, column=3, sticky="nsew")
+            self.label10.grid(row=1, column=3, sticky="nsew")
+            self.label11.grid(row=2, column=3, sticky="nsew")
+            self.label12.grid(row=3, column=0, sticky="nsew")
+            self.label13.grid(row=3, column=1, sticky="nsew")
+            self.label14.grid(row=3, column=2, sticky="nsew")
+            self.label15.grid(row=3, column=3, sticky="nsew")
 
-            self.label9 = Label(self.menu, text="", font="Arial")
-            self.label10 = Label(self.menu, text="", font="Arial")
-            self.label11 = Label(self.menu, text="", font="Arial")
-            self.label12 = Label(self.menu, text="", font="Arial")
-            self.label13 = Label(self.menu, text="", font="Arial")
-            self.label14 = Label(self.menu, text="", font="Arial")
-            self.label15 = Label(self.menu, text="", font="Arial")
-            self.label9.grid(row=9, column=9, sticky="nsew")
-            self.label10.grid(row=9, column=9, sticky="nsew")
-            self.label11.grid(row=9, column=9, sticky="nsew")
-            self.label12.grid(row=9, column=9, sticky="nsew")
-            self.label13.grid(row=9, column=9, sticky="nsew")
-            self.label14.grid(row=9, column=9, sticky="nsew")
-            self.label15.grid(row=9, column=9, sticky="nsew")
+
         elif (self.tam == 4):
-            self.label = Label(self.menu, text=self.mat.mat[0][0], font="Arial")
-            self.label1 = Label(self.menu, text=self.mat.mat[0][1], font="Arial")
-            self.label2 = Label(self.menu, text=self.mat.mat[0][2], font="Arial")
-            self.label3 = Label(self.menu, text=self.mat.mat[0][3], font="Arial")
-            self.label4 = Label(self.menu, text=self.mat.mat[1][0], font="Arial")
-            self.label5 = Label(self.menu, text=self.mat.mat[1][1], font="Arial")
-            self.label6 = Label(self.menu, text=self.mat.mat[1][2], font="Arial")
-            self.label7 = Label(self.menu, text=self.mat.mat[1][3], font="Arial")
-            self.label8 = Label(self.menu, text=self.mat.mat[2][0], font="Arial")
-            self.label9 = Label(self.menu, text=self.mat.mat[2][1], font="Arial")
-            self.label10 = Label(self.menu, text=self.mat.mat[2][2], font="Arial")
-            self.label11 = Label(self.menu, text=self.mat.mat[2][3], font="Arial")
-            self.label12 = Label(self.menu, text=self.mat.mat[3][0], font="Arial")
-            self.label13 = Label(self.menu, text=self.mat.mat[3][1], font="Arial")
-            self.label14 = Label(self.menu, text=self.mat.mat[3][2], font="Arial")
-            self.label15 = Label(self.menu, text=self.mat.mat[3][3], font="Arial")
+            self.label = Label(self.menu, text=self.mat.mat[0][0], font="Arial", width=10)
+            self.label1 = Label(self.menu, text=self.mat.mat[0][1], font="Arial", width=10)
+            self.label2 = Label(self.menu, text=self.mat.mat[0][2], font="Arial", width=10)
+            self.label3 = Label(self.menu, text=self.mat.mat[0][3], font="Arial", width=10)
+            self.label4 = Label(self.menu, text=self.mat.mat[1][0], font="Arial", width=10)
+            self.label5 = Label(self.menu, text=self.mat.mat[1][1], font="Arial", width=10)
+            self.label6 = Label(self.menu, text=self.mat.mat[1][2], font="Arial", width=10)
+            self.label7 = Label(self.menu, text=self.mat.mat[1][3], font="Arial", width=10)
+            self.label8 = Label(self.menu, text=self.mat.mat[2][0], font="Arial", width=10)
+            self.label9 = Label(self.menu, text=self.mat.mat[2][1], font="Arial", width=10)
+            self.label10 = Label(self.menu, text=self.mat.mat[2][2], font="Arial", width=10)
+            self.label11 = Label(self.menu, text=self.mat.mat[2][3], font="Arial", width=10)
+            self.label12 = Label(self.menu, text=self.mat.mat[3][0], font="Arial", width=10)
+            self.label13 = Label(self.menu, text=self.mat.mat[3][1], font="Arial", width=10)
+            self.label14 = Label(self.menu, text=self.mat.mat[3][2], font="Arial", width=10)
+            self.label15 = Label(self.menu, text=self.mat.mat[3][3], font="Arial", width=10)
             self.label.grid(row=0, column=0,sticky="nsew")
             self.label1.grid(row=0, column=1, sticky="nsew")
             self.label2.grid(row=0, column=2, sticky="nsew")
@@ -230,8 +234,6 @@ class Solucao():
             self.label14.grid(row=3, column=2, sticky="nsew")
             self.label15.grid(row=3, column=3, sticky="nsew")
 
-
-        #time.sleep(1)
 
 
     def clique1(self):
@@ -278,4 +280,4 @@ class Solucao():
             self.settamanho()
 
 
-            #time.sleep(1)
+

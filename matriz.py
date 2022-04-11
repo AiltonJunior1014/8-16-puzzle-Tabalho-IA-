@@ -11,13 +11,16 @@ class Matriz():
         self.posy = 0
         self.dist = 0
         self.caminho = []
+        self.passoulist = []
 
+    def appendpassou(self, mat):
+        self.passoulist.append(mat)
 
     def inserecaminho(self, cam):
         self.caminho.append(cam)
 
     def custo(self):
-        return self.dist + self.g
+        self.dist =+ self.g
 
     def incg(self):
         self.g += 1
@@ -88,8 +91,7 @@ class Matriz():
 
     def mostra(self):
         print(self.mat)
-        #print("" + str(self.lin) + "" + str(self.col))
-        #print(""+str(self.posx)+""+str(self.posy))
+
 
     def podeSubir(self):
         return not(self.posy == 0)
@@ -120,8 +122,6 @@ class Matriz():
                 if self.podeDescer():
                     self.desce()
 
-            #print(num)
-            #print(self.mat)
 
     def qtdpecas(self, matriz):# distancia para final
         count = 0
@@ -133,9 +133,9 @@ class Matriz():
 
     def existe(self, pas):
         for i in range(len(pas)):
-            if self.isEqual(pas[i].getMatriz()):
-                return False
-        return True
+            if self.isEqual(pas[i]):
+                return True
+        return False
 
     def __str__(self,x,y):
         return ""+self.mat[x][y]
